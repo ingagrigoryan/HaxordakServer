@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             dependencies {
-                implementation(compose.desktop.currentOs)
+                implementation(compose.desktop.windows_x64)
                 implementation("org.orbit-mvi:orbit-compose:4.6.1")
                 implementation("org.orbit-mvi:orbit-core:4.6.1")
             }

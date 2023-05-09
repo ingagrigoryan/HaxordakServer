@@ -1,26 +1,18 @@
-import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.orbitmvi.orbit.Container
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.container
-import org.orbitmvi.orbit.syntax.simple.intent
-import org.orbitmvi.orbit.syntax.simple.reduce
-import java.io.*
+import java.io.IOException
+import java.io.ObjectOutputStream
 import java.net.ServerSocket
 import java.net.Socket
-import kotlin.jvm.Throws
 
 @Throws(IOException::class)
 internal fun startServer() {
 
 }
 
-class Server(private val scope: CoroutineScope) {
+class Server(private val scope: CoroutineScope, private val rsa: RSAEncryptor) {
     private lateinit var socket: Socket
     private val _state = MutableStateFlow(Message())
     val state = _state.asStateFlow()
@@ -29,8 +21,15 @@ class Server(private val scope: CoroutineScope) {
             val server = ServerSocket(1112)
             socket = server.accept()
             println(socket)
+            sendKeys()
             receiveMessage()
         }.start()
+    }
+
+    private fun sendKeys() {
+        val oos = ObjectOutputStream(socket.getOutputStream())
+        oos.writeObject(rsa.publicKey)
+        oos.writeObject(rsa.privateKey)
     }
 
     private fun receiveMessage() {
@@ -40,14 +39,14 @@ class Server(private val scope: CoroutineScope) {
             for (i in 1..length) {
                 strBuilder.append(socket.getInputStream().read().toChar())
             }
+            val decrypted = rsa.decryptMessage(strBuilder.toString())
             scope.launch {
                 _state.emit(
                     Message(
-                        message = strBuilder.toString(),
+                        message = decrypted,
                         messageType = MessageType.SERVER
                     )
                 )
-                println("received")
             }
         }
     }
@@ -57,7 +56,6 @@ class Server(private val scope: CoroutineScope) {
         if (::socket.isInitialized) {
             socket.getOutputStream().write(text.length)
             socket.getOutputStream().write(text.toByteArray())
-            println(text)
         }
     }
 }

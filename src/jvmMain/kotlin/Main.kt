@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import java.util.Base64
 
 @Composable
-fun App(server: Server) {
+fun App(server: Server, rsaEncryptor: RSAEncryptor) {
     var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
     val lazyListState by remember { mutableStateOf(LazyListState()) }
     val messages = remember {
@@ -36,7 +37,9 @@ fun App(server: Server) {
                 if (textFieldValue.text.isBlank()) {
                     return@Button
                 }
-                server.sendMessage(textFieldValue.text)
+
+                val encodedMessage = rsaEncryptor.encryptMessage(textFieldValue.text)
+                server.sendMessage(encodedMessage)
                 messages.add(
                     Message(
                         message = textFieldValue.text,
@@ -70,9 +73,10 @@ fun App(server: Server) {
 
 
 fun main() = application {
-    val server = Server(rememberCoroutineScope())
+    val rsa = RSAEncryptor()
+    val server = Server(rememberCoroutineScope(), rsa)
     Window(onCloseRequest = ::exitApplication, title = "Haxordak Server") {
-        App(server)
+        App(server, rsa)
     }
 }
 
