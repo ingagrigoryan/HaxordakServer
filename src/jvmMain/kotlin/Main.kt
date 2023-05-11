@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import java.util.Base64
 
 @Composable
 fun App(server: Server, rsaEncryptor: RSAEncryptor) {
