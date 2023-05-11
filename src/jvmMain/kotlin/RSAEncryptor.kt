@@ -17,7 +17,7 @@ class RSAEncryptor {
         publicKey = pair.public
     }
 
-    @Throws(Exception::class)
+    @Throws(InvalidKeyException::class)
     fun encryptMessage(plainText: String): String {
         val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
         cipher.init(Cipher.ENCRYPT_MODE, publicKey)
@@ -27,7 +27,7 @@ class RSAEncryptor {
             )
     }
 
-    @Throws(Exception::class)
+    @Throws(InvalidKeyException::class)
     fun decryptMessage(encryptedText: String?):
             String {
         val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
