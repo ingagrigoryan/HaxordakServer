@@ -7,11 +7,6 @@ import java.io.ObjectOutputStream
 import java.net.ServerSocket
 import java.net.Socket
 
-@Throws(IOException::class)
-internal fun startServer() {
-
-}
-
 class Server(private val scope: CoroutineScope, private val rsa: RSAEncryptor) {
     private lateinit var socket: Socket
     private val _state = MutableStateFlow(Message())
