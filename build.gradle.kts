@@ -30,7 +30,7 @@ kotlin {
         val jvmTest by getting
     }
 }
-
+ 
 compose.desktop {
     application {
         mainClass = "MainKt"
